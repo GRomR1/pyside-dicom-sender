@@ -1,0 +1,8 @@
+pyside6
+pydicom
+pynetdicom
+numpy
+Pillow
+matplotlib
+scikit-image
+pyinstaller
