@@ -15,7 +15,7 @@ from PIL import Image
 from PIL.ImageQt import ImageQt
 
 from PySide6.QtWidgets import QTableWidgetItem, QApplication, QMainWindow, QPushButton, QFileDialog, QLabel
-from PySide6.QtCore import Slot, QObject
+from PySide6.QtCore import Slot, QObject, Qt
 from PySide6.QtGui import QPixmap, QImage
 from PySide6.QtCore import QFile
 from PySide6.QtUiTools import QUiLoader
@@ -50,6 +50,7 @@ class MainWindow(QMainWindow):
         self.ui.push_button_send_file.clicked.connect(self.send_file)
         self.ui.push_button_start_server.clicked.connect(self.start_server)
         self.ui.push_button_show_content.clicked.connect(self.show_content)
+        self.ui.push_button_clear_logs.clicked.connect(self.clear_logs)
         self.ui.plain_text_edit_results.clear()
         self.ui.label_3.hide()
         self.ui.push_button_send_result.hide()
@@ -59,7 +60,11 @@ class MainWindow(QMainWindow):
         self.ui.tabWidget.setCurrentIndex(0)
         self.ui.table_widget_files.setColumnCount(1)
         self.ui.table_widget_files.horizontalHeader().hide()
-        self.ui.table_widget_files.itemClicked.connect(self.show_file)
+        self.ui.table_widget_files.itemClicked.connect(self.show_local_file)
+        self.ui.table_widget_results.setColumnCount(1)
+        self.ui.table_widget_results.horizontalHeader().hide()
+        self.ui.table_widget_results.horizontalHeader().setDefaultSectionSize(300)
+        self.ui.table_widget_results.itemClicked.connect(self.show_result_file)
         # self.ds = None
         CALLING_AET = 'AE_TEST'  # имя данного клиента
         self.ae = AE(ae_title=CALLING_AET)
@@ -70,13 +75,12 @@ class MainWindow(QMainWindow):
         self.temp_dir = TemporaryDirectory()
         print(f"temp_dir - {self.temp_dir}")
 
-    @Slot(QTableWidgetItem)
-    def show_file(self, item):
-        # print(item.text())
-        path = self.ui.label_file_path.text()
-        file = Path.joinpath(Path(path), item.text())
-        self.add_result(f"Просмотр файла - {file}")
-        # ds = dcmread(f, force=True)
+    @Slot()
+    def clear_logs(self):
+        self.ui.plain_text_edit_results.clear()
+        self.add_result("Логи очищены")
+
+    def view_file(self, file, label):
         if file.exists():
             ds = dcmread(file, force=True)
 
@@ -92,7 +96,28 @@ class MainWindow(QMainWindow):
             image = QImage()
             image.load(str(path))
             pixmap = QPixmap.fromImage(image)
-            self.ui.label_image_view.setPixmap(pixmap)
+            pixmap = pixmap.scaled(label.size().width(), label.size().width(),
+                                   Qt.KeepAspectRatio,
+                                   Qt.SmoothTransformation)
+            label.setPixmap(pixmap)
+
+    @Slot(QTableWidgetItem)
+    def show_local_file(self, item):
+        # print(item.text())
+        path = self.ui.label_file_path.text()
+        file = Path.joinpath(Path(path), item.text())
+        self.add_result(f"Просмотр файла - {file}")
+        # ds = dcmread(f, force=True)
+        self.view_file(file, self.ui.label_image_view)
+
+
+    @Slot(QTableWidgetItem)
+    def show_result_file(self, item):
+        # print(item.text())
+        file = Path(item.text())
+        self.add_result(f"Просмотр файла - {file}")
+        # ds = dcmread(f, force=True)
+        self.view_file(file, self.ui.label_result_image_view)
 
     @Slot()
     def show_content(self):
@@ -186,13 +211,15 @@ class MainWindow(QMainWindow):
     @Slot()
     def check_server(self):
         host = self.ui.line_edit_server.text()
+        ae_title = self.ui.line_edit_dest_ae_title.text()
         addr, port = host.split(":")
         if re.match(r"^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
                     addr) and 0 < int(port) < 65536:
             self.addr, self.port = addr, int(port)
-            self.add_result(f"Введен валидный адрес хоста addr = {self.addr}, port = {self.port}. Отправляем ECHO-запрос...")
+            self.add_result(f"Введен валидный адрес хоста addr = {self.addr}, port = {self.port}. "
+                            f"Отправляем ECHO-запрос на {ae_title}...")
 
-            assoc = self.ae.associate(addr=self.addr, port=self.port)
+            assoc = self.ae.associate(addr=self.addr, port=self.port, ae_title=ae_title)
             if assoc.is_established:
                 status = assoc.send_c_echo()
                 # Check the status of the verification request
@@ -303,6 +330,11 @@ class MainWindow(QMainWindow):
             f.write(event.request.DataSet.getvalue())
             self.add_result(f"Файл сохранен - {fname}")
             self.ui.label_status.setText("Результат получен")
+            self.statusBar().setStatusTip("aaa")
+
+        num_rows = self.ui.table_widget_results.rowCount()
+        self.ui.table_widget_results.insertRow(num_rows)
+        self.ui.table_widget_results.setItem(num_rows, 0, QTableWidgetItem(fname))
 
         #
         # # Add the File Meta Information
@@ -369,7 +401,5 @@ class MainWindow(QMainWindow):
 if __name__ == "__main__":
     app = QApplication([])
     widget = MainWindow()
-
     widget.show()
     sys.exit(app.exec())
-

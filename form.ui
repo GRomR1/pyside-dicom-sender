@@ -29,6 +29,19 @@
         </widget>
        </item>
        <item>
+        <widget class="QLineEdit" name="line_edit_dest_ae_title">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>SBERMEDAI</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="push_button_check_server">
          <property name="text">
           <string>Проверить доступность</string>
@@ -160,13 +173,13 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
-        <string>Результаты</string>
+        <string>Логи</string>
        </attribute>
-       <layout class="QHBoxLayout" name="horizontalLayout_6">
+       <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
          <widget class="QPlainTextEdit" name="plain_text_edit_results">
           <property name="readOnly">
@@ -174,11 +187,35 @@
           </property>
          </widget>
         </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_8">
+          <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="push_button_clear_logs">
+            <property name="text">
+             <string>Очистить логи</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
        </layout>
       </widget>
       <widget class="QWidget" name="tab_2">
        <attribute name="title">
-        <string>Изображения</string>
+        <string>Локальные файлы</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout">
         <item row="0" column="0">
@@ -193,6 +230,30 @@
         </item>
         <item row="0" column="1">
          <widget class="QLabel" name="label_image_view">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_3">
+       <attribute name="title">
+        <string>Полученные файлы</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_5">
+        <item>
+         <widget class="QTableWidget" name="table_widget_results">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_result_image_view">
           <property name="text">
            <string/>
           </property>
