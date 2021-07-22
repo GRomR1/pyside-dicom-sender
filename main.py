@@ -71,6 +71,7 @@ class MainWindow(QMainWindow):
         self.ae.add_requested_context(VerificationSOPClass)
         self.addr = '127.0.0.1'
         self.port = 11112
+        self.req_contexts = []
         # self.called_ae_title = None  # имя удаленного пакса/сервера
         self.temp_dir = TemporaryDirectory()
         print(f"temp_dir - {self.temp_dir}")
@@ -291,7 +292,9 @@ class MainWindow(QMainWindow):
                     # self.ui.table_widget_files.setItem(num_rows, 1, QTableWidgetItem(ds.InstanceNumber))
                     # self.ui.table_widget_files.setItem(num_rows, 2, QTableWidgetItem(z))
 
-                    self.ae.add_requested_context(ds.SOPClassUID)
+                    if ds.SOPClassUID not in self.req_contexts:
+                        self.req_contexts.append(ds.SOPClassUID)
+                        self.ae.add_requested_context(ds.SOPClassUID)
                     self.ui.push_button_send_file.setEnabled(True)
                     self.ui.push_button_show_content.setEnabled(True)
                     self.ui.label_status.setText("Файл валидный")
