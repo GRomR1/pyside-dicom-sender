@@ -46,6 +46,11 @@ pyside-dicom-sender\Scripts\pyside6-uic.exe form.ui > ui_main.py
 ```
 pyside-dicom-sender\Scripts\pyinstaller --windowed --onefile dicom-sender.spec
 ```
+2. MacOS
+```
+pyinstaller --windowed --onefile --name="dicom-sender-mac" main.py
+```
+3. Linux
 
 ## Дистрибутивы
 

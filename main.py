@@ -12,7 +12,7 @@ from tempfile import TemporaryDirectory, TemporaryFile
 from skimage import exposure
 import numpy as np
 from PIL import Image
-from PIL.ImageQt import ImageQt
+# from PIL.ImageQt import ImageQt
 
 from PySide6.QtWidgets import QTableWidgetItem, QApplication, QMainWindow, QPushButton, QFileDialog, QLabel
 from PySide6.QtCore import Slot, QObject, Qt
@@ -49,7 +49,7 @@ class MainWindow(QMainWindow):
         self.ui.line_edit_server.returnPressed.connect(self.check_server)
         self.ui.push_button_send_file.clicked.connect(self.send_file)
         self.ui.push_button_start_server.clicked.connect(self.start_server)
-        self.ui.push_button_show_content.clicked.connect(self.show_content)
+        # self.ui.push_button_show_content.clicked.connect(self.show_content)
         self.ui.push_button_clear_logs.clicked.connect(self.clear_logs)
         self.ui.plain_text_edit_results.clear()
         self.ui.label_3.hide()
@@ -75,6 +75,15 @@ class MainWindow(QMainWindow):
         # self.called_ae_title = None  # имя удаленного пакса/сервера
         self.temp_dir = TemporaryDirectory()
         print(f"temp_dir - {self.temp_dir}")
+
+    def closeEvent(self, event):
+        print("close event")
+        self.temp_dir.cleanup()
+        self.ae.shutdown()
+        if True:
+            event.accept() # let the window close
+        else:
+            event.ignore()
 
     @Slot()
     def clear_logs(self):
@@ -120,54 +129,54 @@ class MainWindow(QMainWindow):
         # ds = dcmread(f, force=True)
         self.view_file(file, self.ui.label_result_image_view)
 
-    @Slot()
-    def show_content(self):
-        print("show content")
-        self.add_result("Будет показано только последнее изображении в серии")
-        # image_window = QLabel("", self)
-        path = self.ui.label_file_path.text()
-        files = sorted([p for p in Path(path).glob('**/*') if p.is_file()])
-        try:
-            for f in files[::-1]:
-                ds = dcmread(f, force=True)
-                # # print(ds.file_meta.TransferSyntaxUID)
-                # if 'TransferSyntaxUID' not in ds.file_meta.elements():
-                #     ds.file_meta.add_new([0x0002, 0x0010], 'UI', '1.2.840.10008.1.2')
-                #     # (0002, 0010) Transfer Syntax UID                 UI: Explicit VR Little Endian
-                #
-                #     # ds.file_meta['TransferSyntaxUID'] = '1.2.840.10008.1.2'  # ImplicitVRLittleEndian
-                # print(ds.file_meta.TransferSyntaxUID)
-                # im = self.get_PIL_image(ds)
-                # # im.show()
-                # image_qt = ImageQt(im)
-                # image = QImage(image_qt)
-                # pixmap = QPixmap.fromImage(image)
-                # self.ui.label_image_view.setPixmap(pixmap)
-                # self.ui.label_image_view.update()
-                # image_window.show()
-                # break
+    # @Slot()
+    # def show_content(self):
+    #     print("show content")
+    #     self.add_result("Будет показано только последнее изображении в серии")
+    #     # image_window = QLabel("", self)
+    #     path = self.ui.label_file_path.text()
+    #     files = sorted([p for p in Path(path).glob('**/*') if p.is_file()])
+    #     try:
+    #         for f in files[::-1]:
+    #             ds = dcmread(f, force=True)
+    #             # # print(ds.file_meta.TransferSyntaxUID)
+    #             # if 'TransferSyntaxUID' not in ds.file_meta.elements():
+    #             #     ds.file_meta.add_new([0x0002, 0x0010], 'UI', '1.2.840.10008.1.2')
+    #             #     # (0002, 0010) Transfer Syntax UID                 UI: Explicit VR Little Endian
+    #             #
+    #             #     # ds.file_meta['TransferSyntaxUID'] = '1.2.840.10008.1.2'  # ImplicitVRLittleEndian
+    #             # print(ds.file_meta.TransferSyntaxUID)
+    #             # im = self.get_PIL_image(ds)
+    #             # # im.show()
+    #             # image_qt = ImageQt(im)
+    #             # image = QImage(image_qt)
+    #             # pixmap = QPixmap.fromImage(image)
+    #             # self.ui.label_image_view.setPixmap(pixmap)
+    #             # self.ui.label_image_view.update()
+    #             # image_window.show()
+    #             # break
 
-                # plt.imshow(ds.pixel_array, cmap=plt.cm.gray)
+    #             # plt.imshow(ds.pixel_array, cmap=plt.cm.gray)
 
-                plt.figure(figsize=(6, 6), dpi=100)
-                p_lo, p_hi = np.percentile(ds.pixel_array, (20, 99.5))
-                img_rescale = exposure.rescale_intensity(ds.pixel_array, in_range=(p_lo, p_hi))
-                # plt.imshow(img_rescale, cmap=plt.cm.gray)
-                # plt.show()
+    #             plt.figure(figsize=(6, 6), dpi=100)
+    #             p_lo, p_hi = np.percentile(ds.pixel_array, (20, 99.5))
+    #             img_rescale = exposure.rescale_intensity(ds.pixel_array, in_range=(p_lo, p_hi))
+    #             # plt.imshow(img_rescale, cmap=plt.cm.gray)
+    #             # plt.show()
 
-                path = Path.joinpath(Path(self.temp_dir.name), f.name)
-                path = path.with_suffix('.jpg')
-                plt.imsave(path, img_rescale, cmap=plt.cm.gray)
-                image = QImage()
-                image.load(str(path))
-                pixmap = QPixmap.fromImage(image)
-                self.ui.label_image_view.setPixmap(pixmap)
-                break
-        # except AttributeError as exc:
-        #     print('AttributeError:')
-        #     print(exc)
-        finally:
-            pass
+    #             path = Path.joinpath(Path(self.temp_dir.name), f.name)
+    #             path = path.with_suffix('.jpg')
+    #             plt.imsave(path, img_rescale, cmap=plt.cm.gray)
+    #             image = QImage()
+    #             image.load(str(path))
+    #             pixmap = QPixmap.fromImage(image)
+    #             self.ui.label_image_view.setPixmap(pixmap)
+    #             break
+    #     # except AttributeError as exc:
+    #     #     print('AttributeError:')
+    #     #     print(exc)
+    #     finally:
+    #         pass
 
     @Slot()
     def start_server(self):
