@@ -223,8 +223,9 @@ class MainWindow(QMainWindow):
         host = self.ui.line_edit_server.text()
         ae_title = self.ui.line_edit_dest_ae_title.text()
         addr, port = host.split(":")
-        if re.match(r"^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
-                    addr) and 0 < int(port) < 65536:
+        # if re.match(r"^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
+        #             addr) and 0 < int(port) < 65536:
+        if True:
             self.addr, self.port = addr, int(port)
             self.add_result(f"Введен валидный адрес хоста addr = {self.addr}, port = {self.port}. "
                             f"Отправляем ECHO-запрос на {ae_title}...")

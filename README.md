@@ -60,7 +60,8 @@ pyinstaller --windowed --onefile --name="dicom-sender-mac" main.py
 
 ## Демонстрация
 
-- [Видео](https://files.sbermed.ai/s/tTH2LQXNt4gCK8p):
+- [Видео](https://files.sbermed.ai/s/tTH2LQXNt4gCK8p)
+- [Видео2 (MacOS)](https://files.sbermed.ai/s/kBAc6WsjwpR75GG)
 
 [![Watch the video](images/screenshot1.png)](https://files.sbermed.ai/s/tTH2LQXNt4gCK8p)
 
