@@ -30,7 +30,7 @@ python main.py
 1. Скачать проект с помощью Download
 2. Распаковать zip архив
 3. Открыть терминал по адресу папки
-4. Выполнитьь команды:
+4. Выполнить команды:
 ```
 pip3 install -r requirements.txt
 python3 main.py
